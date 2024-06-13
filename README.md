@@ -65,7 +65,7 @@ Returns a list of orders by employee. The orders can contain the orders when emp
 * `Set<Order> sortOrderByAmount()`
   Returns a set of orders with natural order by amount(sum) appliances in the order.
 
-### Recommendation
+### Advice
   The methods may be using in other methods
 
 ### Details
