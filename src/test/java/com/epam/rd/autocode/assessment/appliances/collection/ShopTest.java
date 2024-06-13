@@ -50,6 +50,9 @@ class ShopTest {
     private static Set<Order> correctOrders;
     private static Map<Appliance, BigDecimal> correctAppliancesInOrders;
 
+    /*not for user*/
+    private static Factory spoon;
+
     @BeforeAll
     static void setup() throws Exception {
         final Class<?> clazz = Class.forName(TestConstants.SHOP_TYPE);
@@ -64,7 +67,12 @@ class ShopTest {
         correctManufacturer = readManufacturers();
         correctAppliances = readAppliances();
         correctOrders = readOrders();
-
+        /* NOT FOR USER*/
+        final String[] args = {"-i", "src/main/java/"};
+        final Launcher launcher = new Launcher();
+        launcher.setArgs(args);
+        launcher.buildModel();
+        spoon = launcher.getFactory();
     }
 
     //check interfaces
@@ -87,6 +95,16 @@ class ShopTest {
                 .filter(method -> method.getName().equals(methodName))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No method with name " + methodName + "."));
+    }
+
+    //not for student
+    @ParameterizedTest
+    @CsvFileSource(resources = "/shopMethods.csv")
+    void checkFields(String name, String type) {
+        allMethods.stream()
+                .filter(method -> method.getReturnType().getName().equals(type) && method.getName().equals(name))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("No method with name " + name + " and type " + type));
     }
 
     // Adds tests
@@ -413,7 +431,7 @@ class ShopTest {
 
         Order expected = getOrderById(3);
 
-        Order actual = shop.findCheaperOrder();
+        Order actual = shop.findCheapestOrder();
 
         assertEquals(expected, actual);
     }
@@ -422,7 +440,7 @@ class ShopTest {
     void givenEmptyOrders_whenFindCheaperOrder_thenCheaperOrder() {
         final Shop shop = new Shop();
         RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
-            Order actual = shop.findCheaperOrder();
+            Order actual = shop.findCheapestOrder();
         });
         String expected = "Order not found";
         assertEquals(expected, thrown.getMessage());
@@ -436,7 +454,7 @@ class ShopTest {
 
         Order expected = getOrderById(4);
 
-        Order actual = shop.findExpensiveOrder();
+        Order actual = shop.findMostExpensiveOrder();
 
         assertEquals(expected, actual);
     }
@@ -445,10 +463,31 @@ class ShopTest {
     void givenEmptyOrders_whenFindExpensiveOrder_thenExpensiveOrder() {
         final Shop shop = new Shop();
         RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
-            Order actual = shop.findExpensiveOrder();
+            Order actual = shop.findMostExpensiveOrder();
         });
         String expected = "Order not found";
         assertEquals(expected, thrown.getMessage());
+    }
+
+    @Test
+    void checkStreamApi() throws ClassNotFoundException {
+        CtType<Shop> agencyClass = spoon.Type().get(Shop.class.getName());
+        Class<?>[] classes = {Find.class, Sort.class, Add.class};
+        Arrays.stream(classes)
+                .map(Class::getDeclaredMethods)
+                .flatMap(Stream::of)
+                .map(m -> agencyClass.getMethodsByName(m.getName()).stream())
+                .flatMap(Function.identity())
+                .forEach(m -> assertTrue(
+                        m.getReferencedTypes().stream()
+                                .map(el -> el.getQualifiedName())
+                                .filter(name -> name.startsWith("java.util.stream")
+                                        || name.startsWith("java.util.function"))
+                                .map(el -> Boolean.FALSE)
+                                .findAny().orElse(Boolean.TRUE),
+                        () -> "Method " + m.getSignature() + " must not use Stream API and types from the "
+                                + "java.util.function package")
+                );
     }
 
     // services methods

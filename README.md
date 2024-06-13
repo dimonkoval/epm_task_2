@@ -1,6 +1,6 @@
 # Appliances shop. Collections
 
-The purpose of this exercise is to check your knowledge of the Java collections framework and your ability to use it on practical tasks. 
+The purpose of this exercise is to check your knowledge of the Java Collections Framework and your ability to use it on practical tasks. 
 
 Duration: **1** hour
 
@@ -21,7 +21,7 @@ You are also given a description of the following interfaces and class:
 
 First, proceed to the Domain model classes and implement their content.  
 
-Then, proceed to the `Shop` class, which contains sets of the `Client` class, the `Appliance` class, the `Employee` class, the `Manufacturer` class,  the `Order` class, and also implements the `Add`, `Sort`, `Find` interfaces. You need to implement the following methods of the `Shop` class:
+Then, proceed to the `Shop` class, which contains sets of the `Client`, the `Appliance`, the `Employee`, the `Manufacturer`,  the `Order` classes, and also implements the Add, Sort, Find interfaces. You need to implement the following methods of the Shop class:
 
 * `public void addClient(Client client)`  
 Adds a client to the set of clients
@@ -47,10 +47,10 @@ Returns a manufacturer by name. If a manufacturer was not found you have to thro
 * `List<Order> findOrderByEmployee(Employee employee)`  
 Returns a list of orders by employee. The orders can contain the orders when employee is null. It means the method returns list of orders with employee is null. If the orders not contain orders with current employee then the method returns empty list.
 
-* `Order findCheaperOrder();`  
+* `Order findCheapestOrder();`  
   Returns a cheaper order from the orders. When we have empty list of orders then you have to throw RuntimeException with text `Order not found`.
 
-* `Order findExpensiveOrder();`  
+* `Order findMostExpensiveOrder();`  
   Returns a expensive order from the orders. When we have empty list of orders then you have to throw RuntimeException with text `Order not found`.
 
 * `Set<Manufacturer> sortManufacturersByName()`
@@ -63,7 +63,7 @@ Returns a list of orders by employee. The orders can contain the orders when emp
   Returns a set of appliances with natural order by Category.
 
 * `Set<Order> sortOrderByAmount()`
-  Returns a set of orders with natural order by amount(suma) appliances in the order.
+  Returns a set of orders with natural order by amount(sum) appliances in the order.
 
 ### Recommendation
   The methods may be using in other methods
